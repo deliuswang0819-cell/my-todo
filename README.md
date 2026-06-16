@@ -1,6 +1,7 @@
-# Ziki's Task Board v8
+# Ziki's Task Board v9
 
 修正：
+- 修复点击 Calendar / Note 时 Work Todo 页面仍然显示的问题
 - Work / Life 保持原来的 Todo 页面
 - Calendar 是独立页面，不会再挤在 Work 页面下面
 - Note 是独立页面，不会再挤在 Work 页面下面

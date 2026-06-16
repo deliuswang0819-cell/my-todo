@@ -268,17 +268,27 @@ function renderTasks() {
 
 function switchView(view) {
   state.currentView = view;
-  el.taskView.hidden = !(view === "Work" || view === "Life");
-  el.calendarView.hidden = view !== "Calendar";
-  el.noteView.hidden = view !== "Note";
 
-  if (view === "Work" || view === "Life") {
+  const showTasks = view === "Work" || view === "Life";
+  const showCalendar = view === "Calendar";
+  const showNote = view === "Note";
+
+  el.taskView.hidden = !showTasks;
+  el.calendarView.hidden = !showCalendar;
+  el.noteView.hidden = !showNote;
+
+  // Double lock the display state because browsers are tiny chaos machines.
+  el.taskView.style.display = showTasks ? "" : "none";
+  el.calendarView.style.display = showCalendar ? "" : "none";
+  el.noteView.style.display = showNote ? "" : "none";
+
+  if (showTasks) {
     state.currentCategory = view;
     renderTasks();
   }
 
-  if (view === "Calendar") renderCalendar();
-  if (view === "Note") renderNotes();
+  if (showCalendar) renderCalendar();
+  if (showNote) renderNotes();
 
   el.tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.view === view));
 }
