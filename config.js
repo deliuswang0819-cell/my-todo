@@ -1,4 +1,4 @@
-// 把这里换成你自己的 Supabase 信息。
+// Supabase settings
 // URL 可以是：https://你的project-id.supabase.co
 // KEY 用 Publishable key，不要用 Secret key。
 
