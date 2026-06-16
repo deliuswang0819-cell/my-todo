@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ziki's Task Board</title>
   <link rel="stylesheet" href="./style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <div class="page">
     <header>
-      <div>
-        <h1>Ziki's Task Board</h1>
-      </div>
+      <h1>Ziki's Task Board</h1>
 
       <nav class="tabs">
         <button class="tab active" data-category="Work">Work</button>
@@ -37,6 +36,7 @@
           <button type="submit">+</button>
         </form>
 
+        <p id="statusText" class="status-text">Connecting...</p>
         <div id="todoList" class="task-list scroll-area"></div>
       </section>
 
@@ -89,6 +89,7 @@
     </article>
   </template>
 
+  <script src="./config.js"></script>
   <script src="./script.js"></script>
 </body>
 </html>

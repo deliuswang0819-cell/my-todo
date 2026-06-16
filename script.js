@@ -1,9 +1,9 @@
-const STORAGE_KEY = "ziki-task-board-v3";
-
 const state = {
   currentCategory: "Work",
-  tasks: loadTasks()
+  tasks: []
 };
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const el = {
   tabs: document.querySelectorAll(".tab"),
@@ -11,6 +11,7 @@ const el = {
   taskInput: document.querySelector("#taskInput"),
   dateInput: document.querySelector("#dateInput"),
   priorityInput: document.querySelector("#priorityInput"),
+  statusText: document.querySelector("#statusText"),
   template: document.querySelector("#taskTemplate"),
   lists: {
     todo: document.querySelector("#todoList"),
@@ -27,16 +28,37 @@ const el = {
   }
 };
 
-function loadTasks() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
-    return [];
-  }
+function setStatus(message, isError = false) {
+  el.statusText.textContent = message;
+  el.statusText.classList.toggle("error", isError);
 }
 
-function saveTasks() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks));
+async function loadTasks() {
+  setStatus("Loading from Supabase...");
+
+  const { data, error } = await db
+    .from("tasks")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    setStatus(`Supabase error: ${error.message}`, true);
+    return;
+  }
+
+  state.tasks = data.map(row => ({
+    id: row.id,
+    title: row.title,
+    dueDate: row.due_date || "",
+    priority: row.priority,
+    category: row.category,
+    done: row.done,
+    createdAt: row.created_at
+  }));
+
+  setStatus("Synced with Supabase");
+  render();
 }
 
 function normalizeDate(date) {
@@ -86,21 +108,54 @@ function createTaskNode(task) {
   priority.textContent = task.priority;
   priority.className = `task-priority ${priorityClass(task.priority)}`;
 
-  checkbox.addEventListener("change", () => {
-    task.done = checkbox.checked;
-    saveTasks();
+  checkbox.addEventListener("change", async () => {
+    const newDone = checkbox.checked;
+    const { error } = await db
+      .from("tasks")
+      .update({ done: newDone })
+      .eq("id", task.id);
+
+    if (error) {
+      console.error(error);
+      setStatus(`Update failed: ${error.message}`, true);
+      return;
+    }
+
+    task.done = newDone;
     render();
   });
 
-  deleteButton.addEventListener("click", () => {
+  deleteButton.addEventListener("click", async () => {
+    const { error } = await db
+      .from("tasks")
+      .delete()
+      .eq("id", task.id);
+
+    if (error) {
+      console.error(error);
+      setStatus(`Delete failed: ${error.message}`, true);
+      return;
+    }
+
     state.tasks = state.tasks.filter(item => item.id !== task.id);
-    saveTasks();
     render();
   });
 
-  moveButton.addEventListener("click", () => {
-    task.category = task.category === "Work" ? "Life" : "Work";
-    saveTasks();
+  moveButton.addEventListener("click", async () => {
+    const newCategory = task.category === "Work" ? "Life" : "Work";
+
+    const { error } = await db
+      .from("tasks")
+      .update({ category: newCategory })
+      .eq("id", task.id);
+
+    if (error) {
+      console.error(error);
+      setStatus(`Move failed: ${error.message}`, true);
+      return;
+    }
+
+    task.category = newCategory;
     render();
   });
 
@@ -126,26 +181,46 @@ function render() {
   });
 }
 
-el.form.addEventListener("submit", event => {
+el.form.addEventListener("submit", async event => {
   event.preventDefault();
 
   const title = el.taskInput.value.trim();
   if (!title) return;
 
-  state.tasks.unshift({
-    id: crypto.randomUUID(),
+  const newTask = {
     title,
-    dueDate: el.dateInput.value,
+    due_date: el.dateInput.value || null,
     priority: el.priorityInput.value,
     category: state.currentCategory,
-    done: false,
-    createdAt: new Date().toISOString()
+    done: false
+  };
+
+  const { data, error } = await db
+    .from("tasks")
+    .insert(newTask)
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    setStatus(`Add failed: ${error.message}`, true);
+    return;
+  }
+
+  state.tasks.unshift({
+    id: data.id,
+    title: data.title,
+    dueDate: data.due_date || "",
+    priority: data.priority,
+    category: data.category,
+    done: data.done,
+    createdAt: data.created_at
   });
 
-  saveTasks();
   el.form.reset();
   el.priorityInput.value = "Medium";
   el.taskInput.focus();
+  setStatus("Synced with Supabase");
   render();
 });
 
@@ -157,4 +232,4 @@ el.tabs.forEach(tab => {
   });
 });
 
-render();
+loadTasks();

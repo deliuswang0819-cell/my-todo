@@ -42,24 +42,16 @@ body {
 }
 
 header {
-  flex: 0 0 86px;
+  flex: 0 0 78px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
 h1 {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 28px;
   letter-spacing: -0.06em;
-}
-
-header p,
-.panel-title p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
-  font-size: 14px;
 }
 
 .tabs {
@@ -138,8 +130,24 @@ h2 {
 }
 
 .panel-title {
-  margin-bottom: 22px;
+  margin-bottom: 18px;
   flex: 0 0 auto;
+}
+
+.panel-title p,
+.status-text {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.status-text {
+  margin: 0 0 10px;
+}
+
+.status-text.error {
+  color: #d94b32;
 }
 
 .module-head {
@@ -166,7 +174,7 @@ h2 {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
-  margin-bottom: 22px;
+  margin-bottom: 12px;
 }
 
 .task-form input,
