@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ziki's Task Board</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>Ziki's Task Board</h1>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" data-category="Work">Work</button>
+        <button class="tab" data-category="Life">Life</button>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <section class="panel todo-panel">
+        <div class="panel-title">
+          <h2>To Do</h2>
+          <p>任务池：想到什么先丢进来。</p>
+        </div>
+
+        <form id="taskForm" class="task-form">
+          <input id="taskInput" type="text" placeholder="+ Add a task..." autocomplete="off" required />
+          <input id="dateInput" type="date" />
+          <select id="priorityInput">
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+          </select>
+          <button type="submit">+</button>
+        </form>
+
+        <div id="todoList" class="task-list scroll-area"></div>
+      </section>
+
+      <section class="board">
+        <section class="panel module today">
+          <div class="module-head">
+            <h2>Due Today</h2>
+            <span class="count" id="todayCount">0</span>
+          </div>
+          <div class="mini-list scroll-area" id="todayList"></div>
+        </section>
+
+        <section class="panel module week">
+          <div class="module-head">
+            <h2>Due This Week</h2>
+            <span class="count" id="weekCount">0</span>
+          </div>
+          <div class="mini-list scroll-area" id="weekList"></div>
+        </section>
+
+        <section class="panel module month">
+          <div class="module-head">
+            <h2>Due This Month</h2>
+            <span class="count" id="monthCount">0</span>
+          </div>
+          <div class="mini-list scroll-area" id="monthList"></div>
+        </section>
+
+        <section class="panel module long">
+          <div class="module-head">
+            <h2>Long Term</h2>
+            <span class="count" id="longCount">0</span>
+          </div>
+          <div class="mini-list scroll-area" id="longList"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <template id="taskTemplate">
+    <article class="task-card">
+      <label class="task-left">
+        <input class="done-input" type="checkbox" />
+        <span class="task-title"></span>
+      </label>
+      <span class="task-date"></span>
+      <span class="task-priority"></span>
+      <button class="move-button" type="button" title="Move Work/Life">↔</button>
+      <button class="delete-button" type="button" title="Delete">×</button>
+    </article>
+  </template>
+
+  <script src="./script.js"></script>
+</body>
+</html>
