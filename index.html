@@ -9,14 +9,15 @@
 </head>
 <body>
   <div class="page">
-    <header>
+    <header class="app-header">
       <h1>Ziki's Task Board</h1>
-      <nav class="top-tabs">
-        <button class="top-tab active" data-view="Work">Work</button>
-        <button class="top-tab" data-view="Life">Life</button>
-        <button class="top-tab" data-view="Calendar">Calendar</button>
-        <button class="top-tab" data-view="Note">Note</button>
-        <button id="refreshButton" class="refresh-button" type="button">Refresh</button>
+
+      <nav class="app-nav">
+        <button class="tab active" data-view="Work" type="button">Work</button>
+        <button class="tab" data-view="Life" type="button">Life</button>
+        <button class="tab" data-view="Calendar" type="button">Calendar</button>
+        <button class="tab" data-view="Note" type="button">Note</button>
+        <button id="refreshButton" class="refresh-icon" type="button" title="Refresh">↻</button>
       </nav>
     </header>
 
@@ -47,14 +48,17 @@
           <div class="module-head"><h2>Due Today</h2><span class="count" id="todayCount">0</span></div>
           <div class="mini-list scroll-area" id="todayList"></div>
         </section>
+
         <section class="panel module week">
           <div class="module-head"><h2>Due This Week</h2><span class="count" id="weekCount">0</span></div>
           <div class="mini-list scroll-area" id="weekList"></div>
         </section>
+
         <section class="panel module month">
           <div class="module-head"><h2>Due This Month</h2><span class="count" id="monthCount">0</span></div>
           <div class="mini-list scroll-area" id="monthList"></div>
         </section>
+
         <section class="panel module long">
           <div class="module-head"><h2>Long Term</h2><span class="count" id="longCount">0</span></div>
           <div class="mini-list scroll-area" id="longList"></div>
@@ -62,17 +66,18 @@
       </section>
     </main>
 
-    <main id="calendarView" class="calendar-layout hidden">
-      <section class="panel calendar-panel">
-        <div class="calendar-top">
-          <div>
+    <main id="calendarView" class="calendar-page" hidden>
+      <section class="calendar-shell">
+        <div class="calendar-toolbar">
+          <div class="calendar-left">
             <h2>Calendar</h2>
-            <p class="helper-text">荷兰 / 中国节假日 + 你自己创建的 event</p>
+            <span class="calendar-subtitle">NL / CN holidays + your own events</span>
           </div>
-          <div class="calendar-controls">
-            <button id="prevMonthButton" type="button">‹</button>
+
+          <div class="calendar-middle">
+            <button id="prevMonthButton" class="round-button" type="button">‹</button>
             <strong id="calendarTitle"></strong>
-            <button id="nextMonthButton" type="button">›</button>
+            <button id="nextMonthButton" class="round-button" type="button">›</button>
           </div>
         </div>
 
@@ -83,41 +88,56 @@
             <option value="Work">Work</option>
             <option value="Life" selected>Life</option>
           </select>
-          <button type="submit">+</button>
+          <button type="submit">Add</button>
         </form>
 
-        <div class="calendar-grid weekdays">
-          <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-        </div>
-        <div id="calendarGrid" class="calendar-grid days-grid"></div>
-      </section>
+        <div class="calendar-content">
+          <section class="calendar-main">
+            <div class="calendar-grid weekdays">
+              <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+            </div>
+            <div id="calendarGrid" class="calendar-grid days-grid"></div>
+          </section>
 
-      <section class="panel event-side">
-        <div class="module-head">
-          <h2 id="selectedDateTitle">Selected Day</h2>
-          <span class="count" id="selectedDateCount">0</span>
+          <aside class="day-agenda">
+            <div class="agenda-head">
+              <div>
+                <h3 id="selectedDateTitle">Selected Day</h3>
+                <p id="selectedDateHint">Click a day to view details.</p>
+              </div>
+              <span class="count" id="selectedDateCount">0</span>
+            </div>
+            <div id="selectedEventsList" class="agenda-list scroll-area"></div>
+          </aside>
         </div>
-        <div id="selectedEventsList" class="selected-list scroll-area"></div>
       </section>
     </main>
 
-    <main id="noteView" class="note-layout hidden">
-      <section class="panel note-editor-panel">
-        <div class="panel-title">
-          <h2>Note</h2>
-          <p>灵感、碎片、备忘录。脑子终于不用继续当垃圾桶。</p>
-        </div>
+    <main id="noteView" class="notes-page" hidden>
+      <section class="notes-app">
+        <aside class="notes-sidebar">
+          <div class="notes-head">
+            <div>
+              <h2>Note</h2>
+              <p>灵感 / 碎片 / 备忘录</p>
+            </div>
+            <span class="count" id="notesCount">0</span>
+          </div>
 
-        <form id="noteForm" class="note-form">
-          <input id="noteTitleInput" type="text" placeholder="Note title..." autocomplete="off" required />
-          <textarea id="noteBodyInput" placeholder="Write something..." required></textarea>
-          <button type="submit">Save note</button>
-        </form>
-      </section>
+          <form id="noteForm" class="note-form">
+            <input id="noteTitleInput" type="text" placeholder="New note title..." autocomplete="off" required />
+            <textarea id="noteBodyInput" placeholder="Write something..." required></textarea>
+            <button type="submit">Save Note</button>
+          </form>
+        </aside>
 
-      <section class="panel notes-panel">
-        <div class="module-head"><h2>All Notes</h2><span class="count" id="notesCount">0</span></div>
-        <div id="notesList" class="notes-list scroll-area"></div>
+        <section class="notes-list-panel">
+          <div class="notes-list-top">
+            <h2>All Notes</h2>
+            <p>像苹果备忘录，但没有苹果那种“我懂你”的自恋。</p>
+          </div>
+          <div id="notesList" class="notes-list scroll-area"></div>
+        </section>
       </section>
     </main>
   </div>
@@ -138,7 +158,7 @@
   <template id="eventTemplate">
     <article class="event-card">
       <span class="event-dot"></span>
-      <div class="event-content">
+      <div>
         <strong class="event-title"></strong>
         <p class="event-meta"></p>
       </div>
@@ -148,7 +168,7 @@
 
   <template id="noteTemplate">
     <article class="note-card">
-      <div class="note-content">
+      <div class="note-card-main">
         <strong class="note-title"></strong>
         <p class="note-body"></p>
         <span class="note-date"></span>

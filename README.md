@@ -1,23 +1,28 @@
-# Ziki's Task Board v7 - Work / Life / Calendar / Note
+# Ziki's Task Board v8
 
-这版加了：
-- 顶部 Work / Life / Calendar / Note 四个入口
-- Calendar：内置 2026 荷兰和中国节假日
-- Calendar：可以自己创建 event，并同步到 Supabase
-- Note：可以写备忘录 / 灵感 / 笔记，并同步到 Supabase
-- Refresh 按钮
-- 原来的 Work / Life Todo 继续保留
+修正：
+- Work / Life 保持原来的 Todo 页面
+- Calendar 是独立页面，不会再挤在 Work 页面下面
+- Note 是独立页面，不会再挤在 Work 页面下面
+- Work / Life / Calendar / Note 四个按钮统一成之前的 pill 按钮样式
+- Refresh 改成小图标按钮
+- Calendar 参考 Google Calendar：月份视图 + 右侧 day agenda + 自己新增 event
+- Note 参考 Apple Notes：左侧编辑区 + 右侧 notes 列表
 
-## 使用步骤
+## 必须先做
 
-1. 先去 Supabase SQL Editor 跑 `setup_events_notes.sql`
-2. 打开 `config.js`
-3. 把 `PASTE_YOUR_PUBLISHABLE_KEY_HERE` 换成你的 Supabase Publishable key
-4. 上传这些文件到 GitHub 仓库根目录：
-   - index.html
-   - style.css
-   - script.js
-   - config.js
-   - README.md
+在 Supabase SQL Editor 里跑一次：
 
-`setup_events_notes.sql` 不需要上传到 GitHub，它只是给 Supabase 跑一次。
+setup_events_notes.sql
+
+## 上传 GitHub
+
+上传这 5 个文件覆盖原来的：
+
+- index.html
+- style.css
+- script.js
+- config.js
+- README.md
+
+不要上传 setup_events_notes.sql 到 GitHub。

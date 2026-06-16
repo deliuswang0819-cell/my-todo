@@ -59,8 +59,9 @@ const HOLIDAYS = [
 ];
 
 const el = {
-  topTabs: document.querySelectorAll(".top-tab"),
+  tabs: document.querySelectorAll(".tab"),
   refreshButton: document.querySelector("#refreshButton"),
+
   taskView: document.querySelector("#taskView"),
   calendarView: document.querySelector("#calendarView"),
   noteView: document.querySelector("#noteView"),
@@ -95,6 +96,7 @@ const el = {
   eventCategoryInput: document.querySelector("#eventCategoryInput"),
   eventTemplate: document.querySelector("#eventTemplate"),
   selectedDateTitle: document.querySelector("#selectedDateTitle"),
+  selectedDateHint: document.querySelector("#selectedDateHint"),
   selectedDateCount: document.querySelector("#selectedDateCount"),
   selectedEventsList: document.querySelector("#selectedEventsList"),
 
@@ -266,33 +268,24 @@ function renderTasks() {
 
 function switchView(view) {
   state.currentView = view;
-
-  el.taskView.classList.toggle("hidden", !(view === "Work" || view === "Life"));
-  el.calendarView.classList.toggle("hidden", view !== "Calendar");
-  el.noteView.classList.toggle("hidden", view !== "Note");
+  el.taskView.hidden = !(view === "Work" || view === "Life");
+  el.calendarView.hidden = view !== "Calendar";
+  el.noteView.hidden = view !== "Note";
 
   if (view === "Work" || view === "Life") {
     state.currentCategory = view;
     renderTasks();
   }
+
   if (view === "Calendar") renderCalendar();
   if (view === "Note") renderNotes();
 
-  el.topTabs.forEach(tab => tab.classList.toggle("active", tab.dataset.view === view));
+  el.tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.view === view));
 }
 
 function getItemsForDate(date) {
-  const holidays = HOLIDAYS.filter(item => item.date === date).map(item => ({
-    ...item,
-    type: "holiday"
-  }));
-
-  const events = state.events.filter(item => item.date === date).map(item => ({
-    ...item,
-    country: "ME",
-    type: "event"
-  }));
-
+  const holidays = HOLIDAYS.filter(item => item.date === date).map(item => ({ ...item, type: "holiday" }));
+  const events = state.events.filter(item => item.date === date).map(item => ({ ...item, country: "ME", type: "event" }));
   return [...holidays, ...events];
 }
 
@@ -353,6 +346,7 @@ function renderCalendar() {
 function renderSelectedDate() {
   const items = getItemsForDate(state.selectedDate);
   el.selectedDateTitle.textContent = formatLongDate(state.selectedDate);
+  el.selectedDateHint.textContent = "Holidays are read-only. Your events can be deleted.";
   el.selectedDateCount.textContent = items.length;
   el.selectedEventsList.innerHTML = "";
 
@@ -462,6 +456,7 @@ el.eventForm.addEventListener("submit", async event => {
 
   state.selectedDate = data.event_date;
   el.eventForm.reset();
+  el.eventDateInput.value = state.selectedDate;
   renderCalendar();
 });
 
@@ -487,7 +482,7 @@ el.noteForm.addEventListener("submit", async event => {
   renderNotes();
 });
 
-el.topTabs.forEach(tab => {
+el.tabs.forEach(tab => {
   tab.addEventListener("click", () => switchView(tab.dataset.view));
 });
 
