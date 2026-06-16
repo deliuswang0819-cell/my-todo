@@ -8,7 +8,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div class="page">
+  <section id="pinScreen" class="pin-screen">
+    <form id="pinForm" class="pin-card">
+      <h1>Ziki's Task Board</h1>
+      <p>Enter PIN to unlock.</p>
+      <input id="pinInput" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" required />
+      <button type="submit">Unlock</button>
+      <span id="pinError" class="pin-error"></span>
+    </form>
+  </section>
+
+  <div id="appPage" class="page app-hidden">
     <header class="app-header">
       <h1>Ziki's Task Board</h1>
 

@@ -1,4 +1,4 @@
-# Ziki's Task Board v9
+# Ziki's Task Board v10
 
 修正：
 - 修复点击 Calendar / Note 时 Work Todo 页面仍然显示的问题
@@ -27,3 +27,18 @@ setup_events_notes.sql
 - README.md
 
 不要上传 setup_events_notes.sql 到 GitHub。
+
+
+## PIN
+
+这版加了 PIN 锁屏。
+
+在 `config.js` 里改：
+
+```js
+const APP_PIN = "0819";
+```
+
+换成你自己的 PIN。
+
+注意：这是前端 PIN，只能防止别人随手打开页面看到内容，不是真正的安全登录。因为 GitHub 仓库是 public，懂技术的人仍然能查看前端代码。真隐私要做 Supabase Auth + 用户级 RLS。

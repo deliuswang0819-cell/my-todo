@@ -1,3 +1,43 @@
+
+function setupPinGate() {
+  const pinScreen = document.querySelector("#pinScreen");
+  const appPage = document.querySelector("#appPage");
+  const pinForm = document.querySelector("#pinForm");
+  const pinInput = document.querySelector("#pinInput");
+  const pinError = document.querySelector("#pinError");
+
+  if (!pinScreen || !appPage || !pinForm || !pinInput) return;
+
+  const unlock = () => {
+    pinScreen.style.display = "none";
+    appPage.classList.remove("app-hidden");
+  };
+
+  if (sessionStorage.getItem("ziki-pin-unlocked") === "yes") {
+    unlock();
+    return;
+  }
+
+  pinInput.focus();
+
+  pinForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    if (pinInput.value === APP_PIN) {
+      sessionStorage.setItem("ziki-pin-unlocked", "yes");
+      pinInput.value = "";
+      unlock();
+      return;
+    }
+
+    pinError.textContent = "Wrong PIN. Human memory has betrayed us again.";
+    pinInput.value = "";
+    pinInput.focus();
+  });
+}
+
+setupPinGate();
+
 const state = {
   currentView: "Work",
   currentCategory: "Work",
