@@ -256,6 +256,7 @@ function createTaskNode(task) {
   const priority = node.querySelector(".task-priority");
   const deleteButton = node.querySelector(".delete-button");
   const moveButton = node.querySelector(".move-button");
+  const editButton = node.querySelector(".edit-button");
 
   node.classList.toggle("done", task.done);
   checkbox.checked = task.done;
@@ -263,6 +264,34 @@ function createTaskNode(task) {
   date.textContent = formatDate(task.dueDate);
   priority.textContent = task.priority;
   priority.className = `task-priority ${priorityClass(task.priority)}`;
+
+
+  editButton.addEventListener("click", async () => {
+    const newTitle = prompt("Edit task title", task.title);
+    if (newTitle === null) return;
+    const titleValue = newTitle.trim();
+    if (!titleValue) return;
+
+    const newDate = prompt("Edit due date as YYYY-MM-DD. Leave empty for no date.", task.dueDate || "");
+    if (newDate === null) return;
+    const dateValue = newDate.trim() || null;
+
+    const newPriority = prompt("Edit priority: Low / Medium / High", task.priority);
+    if (newPriority === null) return;
+    const priorityValue = ["Low", "Medium", "High"].includes(newPriority.trim()) ? newPriority.trim() : task.priority;
+
+    const { error } = await db
+      .from("tasks")
+      .update({ title: titleValue, due_date: dateValue, priority: priorityValue })
+      .eq("id", task.id);
+
+    if (error) return setStatus(`Edit failed: ${error.message}`, true);
+
+    task.title = titleValue;
+    task.dueDate = dateValue || "";
+    task.priority = priorityValue;
+    renderTasks();
+  });
 
   checkbox.addEventListener("change", async () => {
     const { error } = await db.from("tasks").update({ done: checkbox.checked }).eq("id", task.id);
@@ -409,9 +438,44 @@ function renderSelectedDate() {
       item.type === "event" ? "#3f8a55" : item.country === "CN" ? "#d94b32" : "#2f6fba";
 
     const deleteButton = node.querySelector(".event-delete");
+    const editButton = node.querySelector(".event-edit");
     if (item.type === "holiday") {
       deleteButton.style.display = "none";
+      editButton.style.display = "none";
     } else {
+      editButton.addEventListener("click", async () => {
+        const newTitle = prompt("Edit event title", item.title);
+        if (newTitle === null) return;
+        const titleValue = newTitle.trim();
+        if (!titleValue) return;
+
+        const newDate = prompt("Edit event date as YYYY-MM-DD", item.date);
+        if (newDate === null) return;
+        const dateValue = newDate.trim();
+        if (!dateValue) return;
+
+        const newCategory = prompt("Edit category: Work / Life", item.category || "Life");
+        if (newCategory === null) return;
+        const categoryValue = ["Work", "Life"].includes(newCategory.trim()) ? newCategory.trim() : item.category;
+
+        const { error } = await db
+          .from("events")
+          .update({ title: titleValue, event_date: dateValue, category: categoryValue })
+          .eq("id", item.id);
+
+        if (error) return setStatus(`Event edit failed: ${error.message}`, true);
+
+        const target = state.events.find(event => event.id === item.id);
+        if (target) {
+          target.title = titleValue;
+          target.date = dateValue;
+          target.category = categoryValue;
+        }
+        state.selectedDate = dateValue;
+        el.eventDateInput.value = dateValue;
+        renderCalendar();
+      });
+
       deleteButton.addEventListener("click", async () => {
         const { error } = await db.from("events").delete().eq("id", item.id);
         if (error) return setStatus(`Event delete failed: ${error.message}`, true);
@@ -433,6 +497,29 @@ function renderNotes() {
     node.querySelector(".note-title").textContent = note.title;
     node.querySelector(".note-body").textContent = note.body;
     node.querySelector(".note-date").textContent = formatLongDate(note.createdAt);
+
+    node.querySelector(".note-edit").addEventListener("click", async () => {
+      const newTitle = prompt("Edit note title", note.title);
+      if (newTitle === null) return;
+      const titleValue = newTitle.trim();
+      if (!titleValue) return;
+
+      const newBody = prompt("Edit note body", note.body);
+      if (newBody === null) return;
+      const bodyValue = newBody.trim();
+      if (!bodyValue) return;
+
+      const { error } = await db
+        .from("notes")
+        .update({ title: titleValue, body: bodyValue })
+        .eq("id", note.id);
+
+      if (error) return setStatus(`Note edit failed: ${error.message}`, true);
+
+      note.title = titleValue;
+      note.body = bodyValue;
+      renderNotes();
+    });
 
     node.querySelector(".note-delete").addEventListener("click", async () => {
       const { error } = await db.from("notes").delete().eq("id", note.id);
@@ -547,6 +634,26 @@ el.nextMonthButton.addEventListener("click", () => {
   state.calendarDate.setMonth(state.calendarDate.getMonth() + 1);
   renderCalendar();
 });
+
+
+let calendarTouchStartX = null;
+
+el.calendarView.addEventListener("touchstart", event => {
+  calendarTouchStartX = event.changedTouches[0].screenX;
+}, { passive: true });
+
+el.calendarView.addEventListener("touchend", event => {
+  if (calendarTouchStartX === null) return;
+  const endX = event.changedTouches[0].screenX;
+  const diff = endX - calendarTouchStartX;
+
+  if (Math.abs(diff) > 60) {
+    state.calendarDate.setMonth(state.calendarDate.getMonth() + (diff < 0 ? 1 : -1));
+    renderCalendar();
+  }
+
+  calendarTouchStartX = null;
+}, { passive: true });
 
 el.eventDateInput.value = state.selectedDate;
 loadAll();
