@@ -1,4 +1,4 @@
-# Ziki's Task Board v10
+# Ziki's Task Board v12
 
 修正：
 - 修复点击 Calendar / Note 时 Work Todo 页面仍然显示的问题
@@ -42,3 +42,16 @@ const APP_PIN = "0819";
 换成你自己的 PIN。
 
 注意：这是前端 PIN，只能防止别人随手打开页面看到内容，不是真正的安全登录。因为 GitHub 仓库是 public，懂技术的人仍然能查看前端代码。真隐私要做 Supabase Auth + 用户级 RLS。
+
+
+## v12
+
+修复手机端 Calendar：不再把 agenda 卡片盖在日期格子上，日历格子更小，右侧 agenda 在手机上改成下方独立区域。
+
+
+## v12
+
+- 已把章鱼图标接进网站
+- 支持 iPhone 添加到主屏幕时显示自定义图标
+- 新增 apple-touch-icon、favicon 和 site.webmanifest
+- 这版压缩包里不再包含 setup_events_notes.sql（网站仓库不需要它）
