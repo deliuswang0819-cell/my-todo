@@ -929,3 +929,37 @@ h3 {
     min-height: 240px;
   }
 }
+
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.brand-title h1 {
+  margin: 0;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  flex: 0 0 44px;
+  object-fit: cover;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 520px) {
+  .brand-title {
+    gap: 10px;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    flex-basis: 36px;
+  }
+}
