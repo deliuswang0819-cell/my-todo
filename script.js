@@ -45,7 +45,8 @@ const state = {
   events: [],
   notes: [],
   calendarDate: new Date(),
-  selectedDate: toISODate(new Date())
+  selectedDate: toISODate(new Date()),
+  editingTaskId: null
 };
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -112,6 +113,13 @@ const el = {
   priorityInput: document.querySelector("#priorityInput"),
   statusText: document.querySelector("#statusText"),
   taskTemplate: document.querySelector("#taskTemplate"),
+  taskEditOverlay: document.querySelector("#taskEditOverlay"),
+  taskEditSheet: document.querySelector("#taskEditSheet"),
+  taskEditClose: document.querySelector("#taskEditClose"),
+  taskEditCancel: document.querySelector("#taskEditCancel"),
+  editTaskTitle: document.querySelector("#editTaskTitle"),
+  editTaskDate: document.querySelector("#editTaskDate"),
+  editTaskPriority: document.querySelector("#editTaskPriority"),
   lists: {
     todo: document.querySelector("#todoList"),
     today: document.querySelector("#todayList"),
@@ -248,6 +256,23 @@ async function loadNotes() {
   }));
 }
 
+
+function openTaskEditSheet(task) {
+  state.editingTaskId = task.id;
+  el.editTaskTitle.value = task.title;
+  el.editTaskDate.value = task.dueDate || "";
+  el.editTaskPriority.value = task.priority || "Medium";
+  el.taskEditOverlay.hidden = false;
+  setTimeout(() => el.editTaskTitle.focus(), 50);
+}
+
+function closeTaskEditSheet() {
+  state.editingTaskId = null;
+  el.taskEditOverlay.hidden = true;
+  el.taskEditSheet.reset();
+}
+
+
 function createTaskNode(task) {
   const node = el.taskTemplate.content.firstElementChild.cloneNode(true);
   const checkbox = node.querySelector(".done-input");
@@ -255,7 +280,6 @@ function createTaskNode(task) {
   const date = node.querySelector(".task-date");
   const priority = node.querySelector(".task-priority");
   const deleteButton = node.querySelector(".delete-button");
-  const moveButton = node.querySelector(".move-button");
   const editButton = node.querySelector(".edit-button");
 
   node.classList.toggle("done", task.done);
@@ -266,31 +290,8 @@ function createTaskNode(task) {
   priority.className = `task-priority ${priorityClass(task.priority)}`;
 
 
-  editButton.addEventListener("click", async () => {
-    const newTitle = prompt("Edit task title", task.title);
-    if (newTitle === null) return;
-    const titleValue = newTitle.trim();
-    if (!titleValue) return;
-
-    const newDate = prompt("Edit due date as YYYY-MM-DD. Leave empty for no date.", task.dueDate || "");
-    if (newDate === null) return;
-    const dateValue = newDate.trim() || null;
-
-    const newPriority = prompt("Edit priority: Low / Medium / High", task.priority);
-    if (newPriority === null) return;
-    const priorityValue = ["Low", "Medium", "High"].includes(newPriority.trim()) ? newPriority.trim() : task.priority;
-
-    const { error } = await db
-      .from("tasks")
-      .update({ title: titleValue, due_date: dateValue, priority: priorityValue })
-      .eq("id", task.id);
-
-    if (error) return setStatus(`Edit failed: ${error.message}`, true);
-
-    task.title = titleValue;
-    task.dueDate = dateValue || "";
-    task.priority = priorityValue;
-    renderTasks();
+  editButton.addEventListener("click", () => {
+    openTaskEditSheet(task);
   });
 
   checkbox.addEventListener("change", async () => {
@@ -304,14 +305,6 @@ function createTaskNode(task) {
     const { error } = await db.from("tasks").delete().eq("id", task.id);
     if (error) return setStatus(`Delete failed: ${error.message}`, true);
     state.tasks = state.tasks.filter(item => item.id !== task.id);
-    renderTasks();
-  });
-
-  moveButton.addEventListener("click", async () => {
-    const newCategory = task.category === "Work" ? "Life" : "Work";
-    const { error } = await db.from("tasks").update({ category: newCategory }).eq("id", task.id);
-    if (error) return setStatus(`Move failed: ${error.message}`, true);
-    task.category = newCategory;
     renderTasks();
   });
 
@@ -537,6 +530,42 @@ function renderAll() {
   renderCalendar();
   renderNotes();
 }
+
+
+el.taskEditSheet.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const task = state.tasks.find(item => item.id === state.editingTaskId);
+  if (!task) return closeTaskEditSheet();
+
+  const titleValue = el.editTaskTitle.value.trim();
+  if (!titleValue) return;
+
+  const dateValue = el.editTaskDate.value || null;
+  const priorityValue = el.editTaskPriority.value;
+
+  const { error } = await db
+    .from("tasks")
+    .update({ title: titleValue, due_date: dateValue, priority: priorityValue })
+    .eq("id", task.id);
+
+  if (error) return setStatus(`Edit failed: ${error.message}`, true);
+
+  task.title = titleValue;
+  task.dueDate = dateValue || "";
+  task.priority = priorityValue;
+
+  closeTaskEditSheet();
+  renderTasks();
+});
+
+el.taskEditClose.addEventListener("click", closeTaskEditSheet);
+el.taskEditCancel.addEventListener("click", closeTaskEditSheet);
+
+el.taskEditOverlay.addEventListener("click", event => {
+  if (event.target === el.taskEditOverlay) closeTaskEditSheet();
+});
+
 
 el.taskForm.addEventListener("submit", async event => {
   event.preventDefault();

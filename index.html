@@ -163,6 +163,41 @@
     </main>
   </div>
 
+  <section id="taskEditOverlay" class="sheet-overlay" hidden>
+    <form id="taskEditSheet" class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h2>Edit Task</h2>
+        <button id="taskEditClose" class="sheet-close" type="button">×</button>
+      </div>
+
+      <label class="sheet-field">
+        <span>Title</span>
+        <input id="editTaskTitle" type="text" autocomplete="off" required />
+      </label>
+
+      <label class="sheet-field">
+        <span>Due date</span>
+        <input id="editTaskDate" type="date" />
+      </label>
+
+      <label class="sheet-field">
+        <span>Priority</span>
+        <select id="editTaskPriority">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </label>
+
+      <div class="sheet-actions">
+        <button id="taskEditCancel" class="sheet-secondary" type="button">Cancel</button>
+        <button class="sheet-primary" type="submit">Save</button>
+      </div>
+    </form>
+  </section>
+
+
   <template id="taskTemplate">
     <article class="task-card">
       <label class="task-left">
@@ -172,7 +207,6 @@
       <span class="task-date"></span>
       <span class="task-priority"></span>
       <button class="edit-button" type="button" title="Edit">✎</button>
-      <button class="move-button" type="button" title="Move Work/Life">↔</button>
       <button class="delete-button" type="button" title="Delete">×</button>
     </article>
   </template>
