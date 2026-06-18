@@ -163,36 +163,48 @@
     </main>
   </div>
 
-  <section id="taskEditOverlay" class="sheet-overlay" hidden>
-    <form id="taskEditSheet" class="bottom-sheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-head">
-        <h2>Edit Task</h2>
-        <button id="taskEditClose" class="sheet-close" type="button">×</button>
+  <section id="editOverlay" class="edit-overlay" hidden>
+    <form id="editModal" class="edit-modal">
+      <div class="edit-modal-head">
+        <h2 id="editModalTitle">Edit</h2>
+        <button id="editModalClose" class="edit-modal-close" type="button">×</button>
       </div>
 
-      <label class="sheet-field">
+      <label class="edit-field" id="editTitleField">
         <span>Title</span>
-        <input id="editTaskTitle" type="text" autocomplete="off" required />
+        <input id="editTitleInput" type="text" autocomplete="off" />
       </label>
 
-      <label class="sheet-field">
-        <span>Due date</span>
-        <input id="editTaskDate" type="date" />
+      <label class="edit-field" id="editDateField">
+        <span>Date</span>
+        <input id="editDateInput" type="date" />
       </label>
 
-      <label class="sheet-field">
+      <label class="edit-field" id="editPriorityField">
         <span>Priority</span>
-        <select id="editTaskPriority">
+        <select id="editPriorityInput">
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
           <option value="High">High</option>
         </select>
       </label>
 
-      <div class="sheet-actions">
-        <button id="taskEditCancel" class="sheet-secondary" type="button">Cancel</button>
-        <button class="sheet-primary" type="submit">Save</button>
+      <label class="edit-field" id="editCategoryField">
+        <span>Category</span>
+        <select id="editCategoryInput">
+          <option value="Work">Work</option>
+          <option value="Life">Life</option>
+        </select>
+      </label>
+
+      <label class="edit-field" id="editBodyField">
+        <span>Note</span>
+        <textarea id="editBodyInput"></textarea>
+      </label>
+
+      <div class="edit-modal-actions">
+        <button id="editCancelButton" class="edit-secondary" type="button">Cancel</button>
+        <button class="edit-primary" type="submit">Save</button>
       </div>
     </form>
   </section>

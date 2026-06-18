@@ -46,7 +46,7 @@ const state = {
   notes: [],
   calendarDate: new Date(),
   selectedDate: toISODate(new Date()),
-  editingTaskId: null
+  editing: { type: null, id: null }
 };
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -113,13 +113,21 @@ const el = {
   priorityInput: document.querySelector("#priorityInput"),
   statusText: document.querySelector("#statusText"),
   taskTemplate: document.querySelector("#taskTemplate"),
-  taskEditOverlay: document.querySelector("#taskEditOverlay"),
-  taskEditSheet: document.querySelector("#taskEditSheet"),
-  taskEditClose: document.querySelector("#taskEditClose"),
-  taskEditCancel: document.querySelector("#taskEditCancel"),
-  editTaskTitle: document.querySelector("#editTaskTitle"),
-  editTaskDate: document.querySelector("#editTaskDate"),
-  editTaskPriority: document.querySelector("#editTaskPriority"),
+  editOverlay: document.querySelector("#editOverlay"),
+  editModal: document.querySelector("#editModal"),
+  editModalTitle: document.querySelector("#editModalTitle"),
+  editModalClose: document.querySelector("#editModalClose"),
+  editCancelButton: document.querySelector("#editCancelButton"),
+  editTitleField: document.querySelector("#editTitleField"),
+  editDateField: document.querySelector("#editDateField"),
+  editPriorityField: document.querySelector("#editPriorityField"),
+  editCategoryField: document.querySelector("#editCategoryField"),
+  editBodyField: document.querySelector("#editBodyField"),
+  editTitleInput: document.querySelector("#editTitleInput"),
+  editDateInput: document.querySelector("#editDateInput"),
+  editPriorityInput: document.querySelector("#editPriorityInput"),
+  editCategoryInput: document.querySelector("#editCategoryInput"),
+  editBodyInput: document.querySelector("#editBodyInput"),
   lists: {
     todo: document.querySelector("#todoList"),
     today: document.querySelector("#todayList"),
@@ -257,19 +265,107 @@ async function loadNotes() {
 }
 
 
-function openTaskEditSheet(task) {
-  state.editingTaskId = task.id;
-  el.editTaskTitle.value = task.title;
-  el.editTaskDate.value = task.dueDate || "";
-  el.editTaskPriority.value = task.priority || "Medium";
-  el.taskEditOverlay.hidden = false;
-  setTimeout(() => el.editTaskTitle.focus(), 50);
+function setEditFieldVisibility(type) {
+  el.editTitleField.hidden = false;
+  el.editDateField.hidden = !(type === "task" || type === "event");
+  el.editPriorityField.hidden = type !== "task";
+  el.editCategoryField.hidden = type !== "event";
+  el.editBodyField.hidden = type !== "note";
 }
 
-function closeTaskEditSheet() {
-  state.editingTaskId = null;
-  el.taskEditOverlay.hidden = true;
-  el.taskEditSheet.reset();
+function openEditModal(type, item) {
+  state.editing = { type, id: item.id };
+  setEditFieldVisibility(type);
+
+  el.editModalTitle.textContent = type === "task" ? "Edit Task" : type === "event" ? "Edit Event" : "Edit Note";
+  el.editTitleInput.value = item.title || "";
+  el.editDateInput.value = type === "task" ? (item.dueDate || "") : type === "event" ? (item.date || "") : "";
+  el.editPriorityInput.value = type === "task" ? (item.priority || "Medium") : "Medium";
+  el.editCategoryInput.value = type === "event" ? (item.category || "Life") : "Life";
+  el.editBodyInput.value = type === "note" ? (item.body || "") : "";
+
+  el.editOverlay.hidden = false;
+  setTimeout(() => el.editTitleInput.focus(), 40);
+}
+
+function closeEditModal() {
+  state.editing = { type: null, id: null };
+  el.editOverlay.hidden = true;
+  el.editModal.reset();
+}
+
+async function saveEditModal() {
+  const { type, id } = state.editing;
+  if (!type || !id) return;
+
+  const titleValue = el.editTitleInput.value.trim();
+  if (!titleValue) return;
+
+  if (type === "task") {
+    const task = state.tasks.find(item => item.id === id);
+    if (!task) return closeEditModal();
+
+    const dateValue = el.editDateInput.value || null;
+    const priorityValue = el.editPriorityInput.value;
+
+    const { error } = await db
+      .from("tasks")
+      .update({ title: titleValue, due_date: dateValue, priority: priorityValue })
+      .eq("id", id);
+
+    if (error) return setStatus(`Task edit failed: ${error.message}`, true);
+
+    task.title = titleValue;
+    task.dueDate = dateValue || "";
+    task.priority = priorityValue;
+    closeEditModal();
+    renderTasks();
+    return;
+  }
+
+  if (type === "event") {
+    const eventItem = state.events.find(item => item.id === id);
+    if (!eventItem) return closeEditModal();
+
+    const dateValue = el.editDateInput.value;
+    if (!dateValue) return;
+    const categoryValue = el.editCategoryInput.value;
+
+    const { error } = await db
+      .from("events")
+      .update({ title: titleValue, event_date: dateValue, category: categoryValue })
+      .eq("id", id);
+
+    if (error) return setStatus(`Event edit failed: ${error.message}`, true);
+
+    eventItem.title = titleValue;
+    eventItem.date = dateValue;
+    eventItem.category = categoryValue;
+    state.selectedDate = dateValue;
+    el.eventDateInput.value = dateValue;
+    closeEditModal();
+    renderCalendar();
+    return;
+  }
+
+  if (type === "note") {
+    const note = state.notes.find(item => item.id === id);
+    if (!note) return closeEditModal();
+
+    const bodyValue = el.editBodyInput.value.trim();
+
+    const { error } = await db
+      .from("notes")
+      .update({ title: titleValue, body: bodyValue })
+      .eq("id", id);
+
+    if (error) return setStatus(`Note edit failed: ${error.message}`, true);
+
+    note.title = titleValue;
+    note.body = bodyValue;
+    closeEditModal();
+    renderNotes();
+  }
 }
 
 
@@ -291,7 +387,7 @@ function createTaskNode(task) {
 
 
   editButton.addEventListener("click", () => {
-    openTaskEditSheet(task);
+    openEditModal("task", task);
   });
 
   checkbox.addEventListener("change", async () => {
@@ -436,37 +532,8 @@ function renderSelectedDate() {
       deleteButton.style.display = "none";
       editButton.style.display = "none";
     } else {
-      editButton.addEventListener("click", async () => {
-        const newTitle = prompt("Edit event title", item.title);
-        if (newTitle === null) return;
-        const titleValue = newTitle.trim();
-        if (!titleValue) return;
-
-        const newDate = prompt("Edit event date as YYYY-MM-DD", item.date);
-        if (newDate === null) return;
-        const dateValue = newDate.trim();
-        if (!dateValue) return;
-
-        const newCategory = prompt("Edit category: Work / Life", item.category || "Life");
-        if (newCategory === null) return;
-        const categoryValue = ["Work", "Life"].includes(newCategory.trim()) ? newCategory.trim() : item.category;
-
-        const { error } = await db
-          .from("events")
-          .update({ title: titleValue, event_date: dateValue, category: categoryValue })
-          .eq("id", item.id);
-
-        if (error) return setStatus(`Event edit failed: ${error.message}`, true);
-
-        const target = state.events.find(event => event.id === item.id);
-        if (target) {
-          target.title = titleValue;
-          target.date = dateValue;
-          target.category = categoryValue;
-        }
-        state.selectedDate = dateValue;
-        el.eventDateInput.value = dateValue;
-        renderCalendar();
+      editButton.addEventListener("click", () => {
+        openEditModal("event", item);
       });
 
       deleteButton.addEventListener("click", async () => {
@@ -491,27 +558,8 @@ function renderNotes() {
     node.querySelector(".note-body").textContent = note.body;
     node.querySelector(".note-date").textContent = formatLongDate(note.createdAt);
 
-    node.querySelector(".note-edit").addEventListener("click", async () => {
-      const newTitle = prompt("Edit note title", note.title);
-      if (newTitle === null) return;
-      const titleValue = newTitle.trim();
-      if (!titleValue) return;
-
-      const newBody = prompt("Edit note body", note.body);
-      if (newBody === null) return;
-      const bodyValue = newBody.trim();
-      if (!bodyValue) return;
-
-      const { error } = await db
-        .from("notes")
-        .update({ title: titleValue, body: bodyValue })
-        .eq("id", note.id);
-
-      if (error) return setStatus(`Note edit failed: ${error.message}`, true);
-
-      note.title = titleValue;
-      note.body = bodyValue;
-      renderNotes();
+    node.querySelector(".note-edit").addEventListener("click", () => {
+      openEditModal("note", note);
     });
 
     node.querySelector(".note-delete").addEventListener("click", async () => {
@@ -532,38 +580,16 @@ function renderAll() {
 }
 
 
-el.taskEditSheet.addEventListener("submit", async event => {
+el.editModal.addEventListener("submit", async event => {
   event.preventDefault();
-
-  const task = state.tasks.find(item => item.id === state.editingTaskId);
-  if (!task) return closeTaskEditSheet();
-
-  const titleValue = el.editTaskTitle.value.trim();
-  if (!titleValue) return;
-
-  const dateValue = el.editTaskDate.value || null;
-  const priorityValue = el.editTaskPriority.value;
-
-  const { error } = await db
-    .from("tasks")
-    .update({ title: titleValue, due_date: dateValue, priority: priorityValue })
-    .eq("id", task.id);
-
-  if (error) return setStatus(`Edit failed: ${error.message}`, true);
-
-  task.title = titleValue;
-  task.dueDate = dateValue || "";
-  task.priority = priorityValue;
-
-  closeTaskEditSheet();
-  renderTasks();
+  await saveEditModal();
 });
 
-el.taskEditClose.addEventListener("click", closeTaskEditSheet);
-el.taskEditCancel.addEventListener("click", closeTaskEditSheet);
+el.editModalClose.addEventListener("click", closeEditModal);
+el.editCancelButton.addEventListener("click", closeEditModal);
 
-el.taskEditOverlay.addEventListener("click", event => {
-  if (event.target === el.taskEditOverlay) closeTaskEditSheet();
+el.editOverlay.addEventListener("click", event => {
+  if (event.target === el.editOverlay) closeEditModal();
 });
 
 
