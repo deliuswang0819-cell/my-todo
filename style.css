@@ -2044,3 +2044,269 @@ h2 {
     height: 23px !important;
   }
 }
+
+
+/* v21: mobile repair. Desktop stays v20; mobile becomes usable instead of a minimalist empty museum. */
+@media (max-width: 980px) {
+  body {
+    overflow: auto !important;
+  }
+
+  .page {
+    width: calc(100vw - 28px) !important;
+    height: auto !important;
+    min-height: calc(100vh - 36px) !important;
+    margin: 18px auto !important;
+  }
+
+  .app-header {
+    flex-basis: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .brand-title {
+    width: 100% !important;
+    gap: 12px !important;
+  }
+
+  .brand-icon {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  h1 {
+    font-size: 28px !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.06em !important;
+  }
+
+  .app-nav {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding-bottom: 2px !important;
+  }
+
+  .tab {
+    flex: 0 0 auto !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+  }
+
+  .refresh-icon {
+    flex: 0 0 auto !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .layout,
+  .board {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    min-height: 0 !important;
+  }
+
+  .todo-panel,
+  .module {
+    width: 100% !important;
+    border-radius: 24px !important;
+    padding: 18px !important;
+    background: rgba(255,255,252,.86) !important;
+  }
+
+  .todo-panel {
+    height: 430px !important;
+  }
+
+  .module {
+    height: 300px !important;
+  }
+
+  .panel-title {
+    margin-bottom: 12px !important;
+  }
+
+  .panel-title h2,
+  .module-head h2 {
+    font-size: 24px !important;
+    line-height: 1.1 !important;
+  }
+
+  .panel-title p {
+    font-size: 12px !important;
+    margin-top: 6px !important;
+  }
+
+  .module-head {
+    margin-bottom: 10px !important;
+    padding-bottom: 8px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .module-head h2::before {
+    height: 18px !important;
+    margin-right: 8px !important;
+  }
+
+  .count {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 14px !important;
+  }
+
+  .task-form {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr) 42px !important;
+    gap: 7px !important;
+    margin-bottom: 8px !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  #taskInput {
+    grid-column: 1 / -1 !important;
+  }
+
+  #dateInput {
+    grid-column: 1 / 2 !important;
+  }
+
+  #priorityInput {
+    grid-column: 2 / 3 !important;
+  }
+
+  .task-form button {
+    grid-column: 3 / 4 !important;
+    width: 42px !important;
+    min-width: 42px !important;
+  }
+
+  .task-form input,
+  .task-form select,
+  .task-form button {
+    height: 36px !important;
+    min-height: 36px !important;
+    font-size: 13px !important;
+    border-radius: 12px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .status-text {
+    font-size: 12px !important;
+    margin: 0 0 8px !important;
+    padding-bottom: 7px !important;
+  }
+
+  .scroll-area {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-right: 4px !important;
+  }
+
+  .task-list,
+  .mini-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .task-card {
+    height: 38px !important;
+    flex: 0 0 38px !important;
+    display: grid !important;
+    align-items: center !important;
+    grid-template-columns: minmax(0, 1fr) 24px 24px !important;
+    gap: 6px !important;
+    padding: 6px 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--line) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .task-left {
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+  }
+
+  .task-title {
+    display: block !important;
+    min-width: 0 !important;
+    font-size: 14px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .done-input {
+    width: 16px !important;
+    height: 16px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .task-date,
+  .task-priority {
+    display: none !important;
+  }
+
+  .edit-button,
+  .delete-button {
+    display: grid !important;
+    place-items: center !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    width: calc(100vw - 24px) !important;
+    margin: 16px auto !important;
+  }
+
+  h1 {
+    font-size: 26px !important;
+  }
+
+  .tab {
+    padding: 10px 14px !important;
+  }
+
+  .todo-panel {
+    height: 410px !important;
+  }
+
+  .module {
+    height: 270px !important;
+  }
+
+  .panel-title h2,
+  .module-head h2 {
+    font-size: 22px !important;
+  }
+
+  .task-card {
+    height: 36px !important;
+    flex-basis: 36px !important;
+  }
+
+  .task-title {
+    font-size: 13px !important;
+  }
+}
