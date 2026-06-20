@@ -1,4 +1,4 @@
-# Ziki's Task Board v21
+# Ziki's Task Board v23
 
 修正：
 - 修复点击 Calendar / Note 时 Work Todo 页面仍然显示的问题
@@ -44,12 +44,12 @@ const APP_PIN = "0819";
 注意：这是前端 PIN，只能防止别人随手打开页面看到内容，不是真正的安全登录。因为 GitHub 仓库是 public，懂技术的人仍然能查看前端代码。真隐私要做 Supabase Auth + 用户级 RLS。
 
 
-## v21
+## v23
 
 修复手机端 Calendar：不再把 agenda 卡片盖在日期格子上，日历格子更小，右侧 agenda 在手机上改成下方独立区域。
 
 
-## v21
+## v23
 
 - 已把章鱼图标接进网站
 - 支持 iPhone 添加到主屏幕时显示自定义图标
@@ -57,40 +57,40 @@ const APP_PIN = "0819";
 - 这版压缩包里不再包含 setup_events_notes.sql（网站仓库不需要它）
 
 
-## v21
+## v23
 
 - 顶部标题左侧新增章鱼图标
 - `Ziki's Task Board` 标题整体右移，与图标并排显示
 - 保留之前的 iPhone 主屏幕图标配置
 
 
-## v21
+## v23
 
 - 修复手机端 Calendar 里日期输入框超出卡片边界的问题
 - 删除 Note 页面里那句 Apple Notes 玩笑文案
 
 
-## v21
+## v23
 
 - 更强制地修复 iPhone PWA 里 Calendar 日期输入框撑出卡片的问题
 - 再次移除 Note 页面里的 Apple Notes 玩笑文案
 
 
-## v21
+## v23
 
 - 手机和桌面任务卡片变矮，间距变小，一屏能显示更多任务
 - Task / Event / Note 增加编辑按钮 ✎
 - Calendar 支持左右滑动切换月份，也保留左右箭头
 
 
-## v21
+## v23
 
 - To Do 输入区压缩：标题一行，日期 / 优先级 / 添加按钮合并到一行
 - 手机端输入框高度和间距缩小，下面能露出更多 task list
 - 桌面端也稍微收紧 To Do 卡片内部留白
 
 
-## v21
+## v23
 
 - 修复 To Do 输入区在桌面窄栏里撑出边界的问题
 - 删除 Task 的 transfer / Work-Life 移动按钮
@@ -98,7 +98,7 @@ const APP_PIN = "0819";
 - Modal 在电脑和手机端都有最大宽度和边距，避免挡住/支出屏幕
 
 
-## v21
+## v23
 
 - 视觉风格改成更干净、克制的 dashboard 风格
 - 移除大面积粉绿蓝紫卡片感，统一成白色半透明卡片
@@ -112,9 +112,39 @@ const APP_PIN = "0819";
 - PIN 已设置为 135790
 
 
-## v21 configured
+## v23 configured
 
 - 修复 v20 手机端 Work/Life 页面：任务列表在 Due Today / Week / Month / Long Term 中正常显示
 - 手机端标题、按钮、卡片高度整体收紧
 - 保留 v20 桌面端 dashboard 风格
 - Supabase key 与 PIN 仍已配置
+
+
+## v23 configured
+
+- 修复手机端模块里只显示 count、不显示任务列表的问题
+- 强制 module 和 todo-panel 使用 flex column，并给 scroll-area 正确高度
+- 手机端任务行保持紧凑，不再把列表藏起来
+- Supabase key 与 PIN 仍已配置
+
+## v23 clean rebuild
+
+- style.css 已经重写，不再继续在旧 CSS 后面叠补丁
+- 保留 Supabase key 和 PIN 135790
+- 保留 Work / Life / Calendar / Note / PIN / 图标 / 编辑 Modal
+- 修复手机端模块有数字但任务列表不显示的问题
+- 桌面和手机使用同一套清晰响应式规则
+
+
+## v24 refined visual style
+- 字体改成更接近你截图的 serif 风格
+- 顶部章鱼图标换成更简洁的线稿风格
+- 保持任务行紧凑，不让单个任务占太多高度
+- 保留 Supabase key 和 PIN 135790
+- 保留现有功能：Work / Life / Calendar / Note / Edit / PIN
+
+## v25 icon update
+
+- 用新选定的黑白线稿章鱼替换网页 header 图标
+- 同步更新 iPhone 主屏幕图标、PWA 图标和 favicon
+- 保留 v24 refined 的网站风格、Supabase key 和 PIN 135790
