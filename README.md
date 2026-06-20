@@ -1,4 +1,4 @@
-# Ziki's Task Board v19
+# Ziki's Task Board v20
 
 修正：
 - 修复点击 Calendar / Note 时 Work Todo 页面仍然显示的问题
@@ -44,12 +44,12 @@ const APP_PIN = "0819";
 注意：这是前端 PIN，只能防止别人随手打开页面看到内容，不是真正的安全登录。因为 GitHub 仓库是 public，懂技术的人仍然能查看前端代码。真隐私要做 Supabase Auth + 用户级 RLS。
 
 
-## v19
+## v20
 
 修复手机端 Calendar：不再把 agenda 卡片盖在日期格子上，日历格子更小，右侧 agenda 在手机上改成下方独立区域。
 
 
-## v19
+## v20
 
 - 已把章鱼图标接进网站
 - 支持 iPhone 添加到主屏幕时显示自定义图标
@@ -57,42 +57,56 @@ const APP_PIN = "0819";
 - 这版压缩包里不再包含 setup_events_notes.sql（网站仓库不需要它）
 
 
-## v19
+## v20
 
 - 顶部标题左侧新增章鱼图标
 - `Ziki's Task Board` 标题整体右移，与图标并排显示
 - 保留之前的 iPhone 主屏幕图标配置
 
 
-## v19
+## v20
 
 - 修复手机端 Calendar 里日期输入框超出卡片边界的问题
 - 删除 Note 页面里那句 Apple Notes 玩笑文案
 
 
-## v19
+## v20
 
 - 更强制地修复 iPhone PWA 里 Calendar 日期输入框撑出卡片的问题
 - 再次移除 Note 页面里的 Apple Notes 玩笑文案
 
 
-## v19
+## v20
 
 - 手机和桌面任务卡片变矮，间距变小，一屏能显示更多任务
 - Task / Event / Note 增加编辑按钮 ✎
 - Calendar 支持左右滑动切换月份，也保留左右箭头
 
 
-## v19
+## v20
 
 - To Do 输入区压缩：标题一行，日期 / 优先级 / 添加按钮合并到一行
 - 手机端输入框高度和间距缩小，下面能露出更多 task list
 - 桌面端也稍微收紧 To Do 卡片内部留白
 
 
-## v19
+## v20
 
 - 修复 To Do 输入区在桌面窄栏里撑出边界的问题
 - 删除 Task 的 transfer / Work-Life 移动按钮
 - Task / Event / Note 编辑全部改为居中 Modal，不再使用浏览器 prompt
 - Modal 在电脑和手机端都有最大宽度和边距，避免挡住/支出屏幕
+
+
+## v20
+
+- 视觉风格改成更干净、克制的 dashboard 风格
+- 移除大面积粉绿蓝紫卡片感，统一成白色半透明卡片
+- 单个 task 行高度降低，改成紧凑列表行，减少占位
+- 保留 octopus 图标、PIN、Supabase 同步、Calendar、Note、居中编辑 Modal
+
+
+## Configured build
+
+- Supabase publishable key 已填入
+- PIN 已设置为 135790
